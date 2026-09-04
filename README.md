@@ -1,4 +1,4 @@
-# ErrorRouter
+# Error-Router-Platform
 
 > An automated production-error-to-engineering workflow platform that
 > detects, groups, enriches, identifies ownership for, and routes
