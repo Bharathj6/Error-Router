@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "ErrorRouter.Domain/1.0.0": {
+        "runtime": {
+          "ErrorRouter.Domain.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "ErrorRouter.Domain/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
