@@ -61,7 +61,7 @@ public sealed class OutboxJob
 
     public bool Lease(DateTime leaseUntilUtc, string workerId)
     {
-        if (Status == JobStatus.Succeeded || Status == JobStatus.DeadLettered)
+        if (Status is JobStatus.Succeeded or JobStatus.DeadLettered or JobStatus.InProgress)
         {
             return false;
         }
@@ -78,6 +78,38 @@ public sealed class OutboxJob
         return true;
     }
 
+    public void MarkSucceeded(DateTime succeededAtUtc)
+    {
+        if (Status != JobStatus.InProgress)
+        {
+            throw new InvalidOperationException("Only an in-progress job can succeed.");
+        }
+
+        Status = JobStatus.Succeeded;
+        SucceededAtUtc = succeededAtUtc;
+        LeaseUntilUtc = null;
+        LeaseWorkerId = null;
+    }
+
+    public void MarkFailed(string error, DateTime failedAtUtc)
+    {
+        if (Status != JobStatus.InProgress)
+        {
+            throw new InvalidOperationException("Only an in-progress job can fail.");
+        }
+
+        if (string.IsNullOrWhiteSpace(error))
+        {
+            throw new ArgumentException("Job error is required.", nameof(error));
+        }
+
+        Status = JobStatus.Failed;
+        LastError = error.Trim();
+        LastErrorAtUtc = failedAtUtc;
+        LeaseUntilUtc = null;
+        LeaseWorkerId = null;
+    }
+
     public DateTime ScheduleRetry(int attemptNumber, DateTime now)
     {
         if (attemptNumber < 0)
@@ -92,5 +124,19 @@ public sealed class OutboxJob
         LeaseUntilUtc = null;
         LeaseWorkerId = null;
         return retryAt;
+    }
+
+    public void MoveToDeadLetter(string error, DateTime failedAtUtc)
+    {
+        if (string.IsNullOrWhiteSpace(error))
+        {
+            throw new ArgumentException("Job error is required.", nameof(error));
+        }
+
+        Status = JobStatus.DeadLettered;
+        LastError = error.Trim();
+        LastErrorAtUtc = failedAtUtc;
+        LeaseUntilUtc = null;
+        LeaseWorkerId = null;
     }
 }

@@ -30,3 +30,15 @@ public enum TicketLinkStatus
     Closed = 3,
     Failed = 4
 }
+
+public enum ApiCredentialStatus
+{
+    Active = 1,
+    Revoked = 2
+}
+
+public enum IntegrationStatus
+{
+    Active = 1,
+    Disabled = 2
+}

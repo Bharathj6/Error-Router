@@ -1,6 +1,3 @@
 ﻿namespace ErrorRouter.Infrastructure;
 
-public class Class1
-{
-
-}
+internal static class InfrastructureAssemblyMarker;

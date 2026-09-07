@@ -21,16 +21,11 @@ public sealed class ErrorGroup
     {
     }
 
-    public static ErrorGroup Create(Guid organizationId, string fingerprint, string title, string message, TenantScope tenantScope)
+    public static ErrorGroup Create(Guid organizationId, Fingerprint fingerprint, string title, string message, TenantScope tenantScope)
     {
         if (organizationId == Guid.Empty)
         {
             throw new ArgumentException("Organization ID is required.", nameof(organizationId));
-        }
-
-        if (string.IsNullOrWhiteSpace(fingerprint))
-        {
-            throw new ArgumentException("Fingerprint is required.", nameof(fingerprint));
         }
 
         if (tenantScope.OrganizationId != organizationId)
@@ -44,7 +39,7 @@ public sealed class ErrorGroup
         {
             Id = Guid.NewGuid(),
             OrganizationId = organizationId,
-            Fingerprint = fingerprint.Trim(),
+            Fingerprint = fingerprint.Value,
             Title = string.IsNullOrWhiteSpace(title) ? "Untitled error" : title.Trim(),
             Message = message.Trim(),
             OccurrenceCount = 0,
@@ -90,6 +85,7 @@ public sealed class ErrorOccurrence
 
     public static ErrorOccurrence Create(
         Guid organizationId,
+        Guid errorGroupId,
         string sourceEventId,
         Fingerprint fingerprint,
         string serviceName,
@@ -107,6 +103,11 @@ public sealed class ErrorOccurrence
         if (string.IsNullOrWhiteSpace(sourceEventId))
         {
             throw new ArgumentException("Source event ID is required.", nameof(sourceEventId));
+        }
+
+        if (errorGroupId == Guid.Empty)
+        {
+            throw new ArgumentException("Error group ID is required.", nameof(errorGroupId));
         }
 
         if (tenantScope.OrganizationId != organizationId)
@@ -128,7 +129,7 @@ public sealed class ErrorOccurrence
         {
             Id = Guid.NewGuid(),
             OrganizationId = organizationId,
-            ErrorGroupId = Guid.NewGuid(),
+            ErrorGroupId = errorGroupId,
             SourceEventId = sourceEventId.Trim(),
             Fingerprint = fingerprint.Value,
             ServiceName = serviceName.Trim(),
@@ -212,6 +213,23 @@ public sealed class TicketLink
             CreatedAtUtc = createdAtUtc,
             ResolvedAtUtc = null
         };
+    }
+
+    public void MarkResolved(DateTime resolvedAtUtc)
+    {
+        Status = TicketLinkStatus.Resolved;
+        ResolvedAtUtc = resolvedAtUtc;
+    }
+
+    public void MarkClosed(DateTime closedAtUtc)
+    {
+        Status = TicketLinkStatus.Closed;
+        ResolvedAtUtc ??= closedAtUtc;
+    }
+
+    public void MarkFailed()
+    {
+        Status = TicketLinkStatus.Failed;
     }
 }
 

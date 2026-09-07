@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ErrorRouter.Contracts")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5e676cdb29c951570f7c62a206a15b0f4b6bf593")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b0b16b0329f9cc482fcc1de5ecbc2fe42b3ad2ef")]
 [assembly: System.Reflection.AssemblyProductAttribute("ErrorRouter.Contracts")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ErrorRouter.Contracts")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

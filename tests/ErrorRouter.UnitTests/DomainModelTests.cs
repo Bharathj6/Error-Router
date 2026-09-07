@@ -30,9 +30,11 @@ public class DomainModelTests
     {
         var organizationId = Guid.NewGuid();
         var tenantScope = TenantScope.Create(organizationId, Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
+        var errorGroupId = Guid.NewGuid();
 
         var occurrence = ErrorOccurrence.Create(
             organizationId: organizationId,
+            errorGroupId: errorGroupId,
             sourceEventId: "evt-123",
             fingerprint: Fingerprint.Create("a1b2c3"),
             serviceName: "payments",
@@ -43,10 +45,12 @@ public class DomainModelTests
             tenantScope: tenantScope);
 
         Assert.Equal(1, occurrence.Count);
+        Assert.Equal(errorGroupId, occurrence.ErrorGroupId);
         Assert.Equal("payments", occurrence.ServiceName);
 
         Assert.Throws<ArgumentException>(() => ErrorOccurrence.Create(
             organizationId: Guid.Empty,
+            errorGroupId: errorGroupId,
             sourceEventId: "evt-456",
             fingerprint: Fingerprint.Create("abcdef"),
             serviceName: "payments",
@@ -55,6 +59,51 @@ public class DomainModelTests
             payload: "{\"status\":500}",
             occurredAtUtc: DateTime.UtcNow,
             tenantScope: tenantScope));
+    }
+
+    [Fact]
+    public void TenantAggregates_Should_Keep_Organization_Scope()
+    {
+        var organizationId = Guid.NewGuid();
+        var tenantScope = TenantScope.Create(organizationId, Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
+
+        var team = Team.Create(Guid.NewGuid(), organizationId, "Payments", "payments", tenantScope);
+        var credential = ApiCredential.Create(Guid.NewGuid(), organizationId, "ingestion", "er_live", "hash", tenantScope);
+        var integration = TicketingIntegration.Create(Guid.NewGuid(), organizationId, "Jira", TicketProviderType.Jira, "encrypted", tenantScope);
+
+        Assert.Equal(organizationId, team.OrganizationId);
+        Assert.Equal(ApiCredentialStatus.Active, credential.Status);
+        Assert.Equal(IntegrationStatus.Active, integration.Status);
+        Assert.Throws<ArgumentException>(() => Team.Create(Guid.NewGuid(), Guid.NewGuid(), "Payments", null, tenantScope));
+    }
+
+    [Fact]
+    public void Decisions_Should_Expose_Explainable_Result()
+    {
+        var ruleId = Guid.NewGuid();
+        var teamId = Guid.NewGuid();
+        var integrationId = Guid.NewGuid();
+
+        var ownership = OwnershipDecision.Assigned(teamId, ruleId, "matched service rule");
+        var routing = RoutingDecision.Routed(integrationId, "matched production binding");
+
+        Assert.Equal(teamId, ownership.TeamId);
+        Assert.Equal(ruleId, ownership.RuleId);
+        Assert.Equal(integrationId, routing.IntegrationId);
+        Assert.Equal("matched production binding", routing.Reason);
+    }
+
+    [Fact]
+    public void OutboxJob_Should_Reject_Invalid_State_Transitions()
+    {
+        var organizationId = Guid.NewGuid();
+        var tenantScope = TenantScope.Create(organizationId, Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
+        var job = OutboxJob.Create(organizationId, JobType.RouteError, "{}", DateTime.UtcNow, tenantScope);
+
+        Assert.Throws<InvalidOperationException>(() => job.MarkSucceeded(DateTime.UtcNow));
+        Assert.True(job.Lease(DateTime.UtcNow.AddMinutes(5), "worker-1"));
+        job.MarkSucceeded(DateTime.UtcNow);
+        Assert.False(job.Lease(DateTime.UtcNow.AddMinutes(5), "worker-2"));
     }
 
     [Fact]

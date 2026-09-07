@@ -100,7 +100,7 @@
           "Microsoft.EntityFrameworkCore.Tools": "8.0.8",
           "Microsoft.Extensions.Diagnostics.HealthChecks": "8.0.8",
           "Microsoft.NET.Test.Sdk": "17.11.1",
-          "Npgsql.EntityFrameworkCore.PostgreSQL": "8.0.4",
+          "Npgsql.EntityFrameworkCore.PostgreSQL": "8.0.8",
           "StackExchange.Redis": "2.8.12",
           "xunit": "2.9.0",
           "xunit.runner.visualstudio": "2.8.2"

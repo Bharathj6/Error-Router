@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "1LWI3SIpLS0PmvBqZ1k5wvPOp7PRCTwsqHkLll6OJMg=",
+  "Source": "ErrorRouter.Api",
+  "BasePath": "_content/ErrorRouter.Api",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

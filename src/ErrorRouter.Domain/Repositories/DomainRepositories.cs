@@ -1,5 +1,8 @@
 namespace ErrorRouter.Domain.Repositories;
 
+using ErrorRouter.Domain.Entities;
+using ErrorRouter.Domain.ValueObjects;
+
 public interface IUnitOfWork
 {
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
@@ -7,25 +10,27 @@ public interface IUnitOfWork
 
 public interface IOrganizationRepository
 {
-    Task<Guid?> GetOrganizationIdByTenantAsync(Guid organizationId, CancellationToken cancellationToken = default);
+    Task<Organization?> GetByIdAsync(TenantScope tenantScope, CancellationToken cancellationToken = default);
 }
 
 public interface IErrorGroupRepository
 {
-    Task<bool> ExistsAsync(Guid organizationId, string fingerprint, CancellationToken cancellationToken = default);
+    Task<ErrorGroup?> FindAsync(TenantScope tenantScope, Fingerprint fingerprint, CancellationToken cancellationToken = default);
+    Task AddAsync(ErrorGroup errorGroup, CancellationToken cancellationToken = default);
 }
 
 public interface IOutboxJobRepository
 {
-    Task AddAsync(object job, CancellationToken cancellationToken = default);
+    Task AddAsync(OutboxJob job, CancellationToken cancellationToken = default);
 }
 
 public interface ITicketLinkRepository
 {
-    Task<bool> ExistsAsync(Guid organizationId, Guid errorGroupId, Guid integrationId, CancellationToken cancellationToken = default);
+    Task<TicketLink?> FindAsync(TenantScope tenantScope, Guid errorGroupId, Guid integrationId, CancellationToken cancellationToken = default);
+    Task AddAsync(TicketLink ticketLink, CancellationToken cancellationToken = default);
 }
 
 public interface IAuditEventRepository
 {
-    Task AddAsync(object auditEvent, CancellationToken cancellationToken = default);
+    Task AddAsync(AuditEvent auditEvent, CancellationToken cancellationToken = default);
 }

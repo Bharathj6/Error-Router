@@ -1,0 +1,53 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "ErrorRouter.Application/1.0.0": {
+        "dependencies": {
+          "ErrorRouter.Contracts": "1.0.0",
+          "ErrorRouter.Domain": "1.0.0"
+        },
+        "runtime": {
+          "ErrorRouter.Application.dll": {}
+        }
+      },
+      "ErrorRouter.Contracts/1.0.0": {
+        "runtime": {
+          "ErrorRouter.Contracts.dll": {
+            "assemblyVersion": "1.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "ErrorRouter.Domain/1.0.0": {
+        "runtime": {
+          "ErrorRouter.Domain.dll": {
+            "assemblyVersion": "1.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "ErrorRouter.Application/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "ErrorRouter.Contracts/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "ErrorRouter.Domain/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

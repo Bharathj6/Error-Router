@@ -1,0 +1,12 @@
+C:\Users\bhara\Documents\GitHub\Error-Router\src\ErrorRouter.Contracts\bin\Debug\net8.0\ErrorRouter.Contracts.deps.json
+C:\Users\bhara\Documents\GitHub\Error-Router\src\ErrorRouter.Contracts\bin\Debug\net8.0\ErrorRouter.Contracts.dll
+C:\Users\bhara\Documents\GitHub\Error-Router\src\ErrorRouter.Contracts\bin\Debug\net8.0\ErrorRouter.Contracts.pdb
+C:\Users\bhara\Documents\GitHub\Error-Router\src\ErrorRouter.Contracts\obj\Debug\net8.0\ErrorRouter.Contracts.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\bhara\Documents\GitHub\Error-Router\src\ErrorRouter.Contracts\obj\Debug\net8.0\ErrorRouter.Contracts.AssemblyInfoInputs.cache
+C:\Users\bhara\Documents\GitHub\Error-Router\src\ErrorRouter.Contracts\obj\Debug\net8.0\ErrorRouter.Contracts.AssemblyInfo.cs
+C:\Users\bhara\Documents\GitHub\Error-Router\src\ErrorRouter.Contracts\obj\Debug\net8.0\ErrorRouter.Contracts.csproj.CoreCompileInputs.cache
+C:\Users\bhara\Documents\GitHub\Error-Router\src\ErrorRouter.Contracts\obj\Debug\net8.0\ErrorRouter.Contracts.sourcelink.json
+C:\Users\bhara\Documents\GitHub\Error-Router\src\ErrorRouter.Contracts\obj\Debug\net8.0\ErrorRouter.Contracts.dll
+C:\Users\bhara\Documents\GitHub\Error-Router\src\ErrorRouter.Contracts\obj\Debug\net8.0\refint\ErrorRouter.Contracts.dll
+C:\Users\bhara\Documents\GitHub\Error-Router\src\ErrorRouter.Contracts\obj\Debug\net8.0\ErrorRouter.Contracts.pdb
+C:\Users\bhara\Documents\GitHub\Error-Router\src\ErrorRouter.Contracts\obj\Debug\net8.0\ref\ErrorRouter.Contracts.dll

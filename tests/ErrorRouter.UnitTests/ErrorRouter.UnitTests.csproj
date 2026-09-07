@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="../../src/ErrorRouter.Domain/ErrorRouter.Domain.csproj" />
+    <ProjectReference Include="../../src/ErrorRouter.Infrastructure/ErrorRouter.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>

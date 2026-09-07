@@ -140,9 +140,21 @@ The foundation milestone is now present in the repository. It includes the `Erro
 
 The foundation structure is covered by `FoundationStructureTests`, which verifies the core repository files, project layout, application references from the API and Worker, and the `/health/live` and `/health/ready` API routes. The current solution test run has one known failure in the project-reference assertion because the test compares project names with relative XML include paths; the integration-test assembly passes. No domain behavior, database schema, provider integration, or production deployment work is included in this milestone.
 
+### Implemented: 02 - Domain model
+
+The domain milestone now defines tenant-scoped organization hierarchy entities, teams, API credential metadata, ticketing integrations and bindings, source-event claims, error groups and occurrences, ticket links, ownership rules, durable jobs, dead letters, and audit events. Domain value objects include `TenantScope`, `Fingerprint`, `SourceEventKey`, `OwnershipDecision`, and `RoutingDecision`. Aggregate factories use private setters and validate organization scope; job and ticket-link lifecycle methods guard invalid state transitions. Repository ports are tenant-aware and the Application project exposes the `IErrorIngestionService` boundary without introducing infrastructure dependencies.
+
+Focused domain tests cover fingerprint and source-event validation, explicit error-group association, tenant isolation, explainable ownership and routing decisions, ticket-link state, and job leasing and transitions. The focused suite has 11 passing tests plus the known plan-01 project-reference assertion failure. The domain and application builds pass with zero warnings or errors. A solution build remains blocked by the existing Worker `Host` resolution error in `src/ErrorRouter.Worker/Program.cs`; no database, HTTP, provider, or migration behavior was added in this stage.
+
+### Implemented: 03 - Database and EF Core
+
+Infrastructure now contains `ErrorRouterDbContext`, a design-time factory, explicit PostgreSQL mappings, tenant query guards, a save interceptor, tenant-aware repository implementations, and a transaction runner. The initial migration creates the full tenant, credential, integration, ownership, error, source-event, ticket, job, dead-letter, and audit schema. Tables and columns use snake_case names; redacted payload/predicate/job fields use `jsonb`, fingerprints use `char(64)`, timestamps use `timestamp with time zone`, and named unique constraints enforce tenant-scoped grouping, source-event idempotency, and ticket-link deduplication.
+
+The persistence model tests verify PostgreSQL types, named uniqueness indexes, and context tenant isolation. Ten selected domain and persistence tests pass, and the Infrastructure project builds with zero warnings or errors. A live PostgreSQL migration, rollback, and concurrent constraint smoke test is intentionally deferred to plan 19, which introduces Testcontainers. The full solution still carries the known plan-01 Worker host compile error and project-reference assertion failure.
+
 ### Next implementation stage
 
-The next eligible stage is 02 - Domain model. It should build on the foundation without introducing database migrations or provider behavior ahead of the dependency-ordered plan sequence. The reference assertion should be corrected before treating plan 01 as fully validated.
+The next eligible stage is 04 - Tenancy and credentials. It should provide the runtime tenant context, API-key hashing and rotation, encrypted provider credential storage, and DI wiring over the persistence boundary without weakening the fail-closed query and save guards.
 
 ## Core engineering decisions
 
