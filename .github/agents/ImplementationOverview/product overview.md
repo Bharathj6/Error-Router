@@ -152,19 +152,27 @@ Infrastructure now contains `ErrorRouterDbContext`, a design-time factory, expli
 
 The persistence model tests verify PostgreSQL types, named uniqueness indexes, and context tenant isolation. Ten selected domain and persistence tests pass, and the Infrastructure project builds with zero warnings or errors. A live PostgreSQL migration, rollback, and concurrent constraint smoke test is intentionally deferred to plan 19, which introduces Testcontainers. The full solution still carries the known plan-01 Worker host compile error and project-reference assertion failure.
 
-### Next implementation stage
-
-The next eligible stage is 04 - Tenancy and credentials. It should provide the runtime tenant context, API-key hashing and rotation, encrypted provider credential storage, and DI wiring over the persistence boundary without weakening the fail-closed query and save guards.
-
 ### Implemented: 04 - Tenancy and credentials
 
 The credential boundary now issues `er_live_` keys, stores only PBKDF2-SHA256 hashes with per-key salts and a high work factor, validates keys with constant-time comparison, tracks expiry and last use, and supports revocation. Credentials retain organization, application, service, and environment scope so successful authentication can establish an exact `TenantScope`. `ApiKeyValidator` performs prefix lookup followed by hash and lifecycle validation before returning scope. Provider credentials can be protected with AES-GCM using an externally supplied key and explicit key identifier; plaintext is never persisted or returned by the protection service. `TenantContext` provides the request-scoped application boundary. Development configuration now exposes local PostgreSQL and Redis connection-string slots plus credential settings; production settings remain empty and are intended to be injected through environment variables or user secrets.
 
 The `CredentialScope` and `CredentialScopeRelationships` migrations add lifecycle and tenant-scope columns plus foreign keys. Focused security tests cover wrong, expired, and revoked keys, hash non-disclosure, tenant scope preservation, usage tracking, encrypted round trips, and key-identifier rejection. Infrastructure builds cleanly with zero warnings or errors. Live authentication-handler and PostgreSQL endpoint tests remain deferred until the API hosting and Testcontainers stages; the known plan-01 project-reference assertion and Worker host compile issue remain outside this stage.
 
+### Implemented: 05 - Ingestion contracts
+
+The API now exposes versioned `POST /v1/ingest` intake with `IngestErrorRequest`, exception/context payloads, source-event identity, correlation IDs, and an acceptance response. The endpoint requires `X-Api-Key`, establishes the exact tenant scope through `IApiKeyValidator`, checks the rate-limit port before request validation, enforces `application/json`, rejects unsupported versions, future timestamps, excessive tags, unknown JSON members, and bodies above the configured 256 KiB limit, and maps accepted, invalid, unauthorized, unsupported media, and rate-limited requests to explicit responses. The application service boundary returns an acceptance ID; redaction, fingerprinting, grouping, and durable source-event persistence remain owned by plans 06-08.
+
+Focused contract tests cover JSON round-tripping, version/timestamp validation, and tag bounds. The unit tests pass for the new ingestion contract slice. The API source has no editor-reported errors; a full API output build can be blocked when the already-running API process holds its output DLL, so validation used the existing process-safe build path. No request body is logged or persisted by this stage.
+
+### Implemented: 06 - Redaction pipeline
+
+The sanitization boundary now performs deterministic, recursive JSON redaction across nested objects and arrays, case-insensitive sensitive-field matching, denylist protection for authorization/cookie/proxy credentials, stack-trace credential masking, configured custom regex rules with bounded execution time, maximum input/output byte limits, and maximum traversal depth. `IngestionService` invokes the pipeline immediately after authentication and before any future fingerprinting, persistence, logging, or job serialization. Redaction failures are represented as safe validation failures without including matched values in diagnostics.
+
+Focused redaction tests cover nested case variants, arrays, protected headers, stack traces, custom replacement rules, malformed JSON, depth limits, and size limits. The selected domain, persistence, credential, ingestion, and redaction tests pass (20 total), and affected projects have no editor-reported errors. Live endpoint leakage tests and telemetry assertions remain deferred to the integration/observability stages.
+
 ### Next implementation stage
 
-The next eligible stage is 05 - Ingestion contracts. It should define the public event DTOs, validation, authentication flow integration, and `202 Accepted` intake endpoint over the tenant and credential boundaries implemented here.
+The next eligible stage is 07 - Fingerprinting and normalization. It should consume only the redacted representation and produce deterministic SHA-256 fingerprints without reintroducing raw payload handling.
 
 ## Core engineering decisions
 

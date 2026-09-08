@@ -1,6 +1,3 @@
 ﻿namespace ErrorRouter.Contracts;
 
-public class Class1
-{
-
-}
+internal static class ContractsAssemblyMarker;
