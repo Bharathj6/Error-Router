@@ -3,6 +3,12 @@
 The PostgreSQL database is the source of truth. Migrations are generated and
 applied explicitly; application startup does not run migrations implicitly.
 
+For local development, `src/ErrorRouter.Api/appsettings.Development.json`
+contains the non-production PostgreSQL defaults used by the planned local
+database. Override them with `ConnectionStrings__Postgres` when your database
+uses different credentials. Do not copy these development values into a
+production environment.
+
 ## Generate a migration
 
 From the repository root, with the .NET 8 SDK installed:

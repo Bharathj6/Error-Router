@@ -29,9 +29,21 @@ namespace ErrorRouter.Infrastructure.Persistence.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
+                    b.Property<Guid>("ApplicationId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("application_id");
+
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("created_at_utc");
+
+                    b.Property<Guid>("EnvironmentId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("environment_id");
+
+                    b.Property<DateTime?>("ExpiresAtUtc")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("expires_at_utc");
 
                     b.Property<string>("KeyHash")
                         .IsRequired()
@@ -44,6 +56,10 @@ namespace ErrorRouter.Infrastructure.Persistence.Migrations
                         .HasMaxLength(32)
                         .HasColumnType("character varying(32)")
                         .HasColumnName("key_prefix");
+
+                    b.Property<DateTime?>("LastUsedAtUtc")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("last_used_at_utc");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -59,6 +75,10 @@ namespace ErrorRouter.Infrastructure.Persistence.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("revoked_at_utc");
 
+                    b.Property<Guid>("ServiceId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("service_id");
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(32)
@@ -66,6 +86,15 @@ namespace ErrorRouter.Infrastructure.Persistence.Migrations
                         .HasColumnName("status");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ApplicationId");
+
+                    b.HasIndex("EnvironmentId");
+
+                    b.HasIndex("ServiceId");
+
+                    b.HasIndex("KeyPrefix", "Status")
+                        .HasDatabaseName("ix_api_credentials_prefix_status");
 
                     b.HasIndex("OrganizationId", "KeyPrefix")
                         .IsUnique()
@@ -780,10 +809,28 @@ namespace ErrorRouter.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("ErrorRouter.Domain.Entities.ApiCredential", b =>
                 {
+                    b.HasOne("ErrorRouter.Domain.Entities.Application", null)
+                        .WithMany()
+                        .HasForeignKey("ApplicationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ErrorRouter.Domain.Entities.Environment", null)
+                        .WithMany()
+                        .HasForeignKey("EnvironmentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("ErrorRouter.Domain.Entities.Organization", null)
                         .WithMany()
                         .HasForeignKey("OrganizationId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ErrorRouter.Domain.Entities.Service", null)
+                        .WithMany()
+                        .HasForeignKey("ServiceId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 

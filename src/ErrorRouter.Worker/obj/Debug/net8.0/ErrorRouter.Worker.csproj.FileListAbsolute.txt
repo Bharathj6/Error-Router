@@ -1,6 +1,0 @@
-C:\Users\bhara\Documents\GitHub\Error-Router\src\ErrorRouter.Worker\obj\Debug\net8.0\ErrorRouter.Worker.csproj.AssemblyReference.cache
-C:\Users\bhara\Documents\GitHub\Error-Router\src\ErrorRouter.Worker\obj\Debug\net8.0\ErrorRouter.Worker.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\bhara\Documents\GitHub\Error-Router\src\ErrorRouter.Worker\obj\Debug\net8.0\ErrorRouter.Worker.AssemblyInfoInputs.cache
-C:\Users\bhara\Documents\GitHub\Error-Router\src\ErrorRouter.Worker\obj\Debug\net8.0\ErrorRouter.Worker.AssemblyInfo.cs
-C:\Users\bhara\Documents\GitHub\Error-Router\src\ErrorRouter.Worker\obj\Debug\net8.0\ErrorRouter.Worker.csproj.CoreCompileInputs.cache
-C:\Users\bhara\Documents\GitHub\Error-Router\src\ErrorRouter.Worker\obj\Debug\net8.0\ErrorRouter.Worker.sourcelink.json

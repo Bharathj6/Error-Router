@@ -156,6 +156,16 @@ The persistence model tests verify PostgreSQL types, named uniqueness indexes, a
 
 The next eligible stage is 04 - Tenancy and credentials. It should provide the runtime tenant context, API-key hashing and rotation, encrypted provider credential storage, and DI wiring over the persistence boundary without weakening the fail-closed query and save guards.
 
+### Implemented: 04 - Tenancy and credentials
+
+The credential boundary now issues `er_live_` keys, stores only PBKDF2-SHA256 hashes with per-key salts and a high work factor, validates keys with constant-time comparison, tracks expiry and last use, and supports revocation. Credentials retain organization, application, service, and environment scope so successful authentication can establish an exact `TenantScope`. `ApiKeyValidator` performs prefix lookup followed by hash and lifecycle validation before returning scope. Provider credentials can be protected with AES-GCM using an externally supplied key and explicit key identifier; plaintext is never persisted or returned by the protection service. `TenantContext` provides the request-scoped application boundary. Development configuration now exposes local PostgreSQL and Redis connection-string slots plus credential settings; production settings remain empty and are intended to be injected through environment variables or user secrets.
+
+The `CredentialScope` and `CredentialScopeRelationships` migrations add lifecycle and tenant-scope columns plus foreign keys. Focused security tests cover wrong, expired, and revoked keys, hash non-disclosure, tenant scope preservation, usage tracking, encrypted round trips, and key-identifier rejection. Infrastructure builds cleanly with zero warnings or errors. Live authentication-handler and PostgreSQL endpoint tests remain deferred until the API hosting and Testcontainers stages; the known plan-01 project-reference assertion and Worker host compile issue remain outside this stage.
+
+### Next implementation stage
+
+The next eligible stage is 05 - Ingestion contracts. It should define the public event DTOs, validation, authentication flow integration, and `202 Accepted` intake endpoint over the tenant and credential boundaries implemented here.
+
 ## Core engineering decisions
 
 The MVP is intentionally built as a modular monolith rather than a distributed system. This choice reduces operational complexity while still separating the business concerns of ingestion, ownership, routing, and worker processing. The architecture keeps a clear dependency direction and supports later extraction if the platform outgrows the initial footprint.

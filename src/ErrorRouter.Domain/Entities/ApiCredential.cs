@@ -7,18 +7,23 @@ public sealed class ApiCredential
 {
     public Guid Id { get; private set; }
     public Guid OrganizationId { get; private set; }
+    public Guid ApplicationId { get; private set; }
+    public Guid ServiceId { get; private set; }
+    public Guid EnvironmentId { get; private set; }
     public string Name { get; private set; } = string.Empty;
     public string KeyPrefix { get; private set; } = string.Empty;
     public string KeyHash { get; private set; } = string.Empty;
     public ApiCredentialStatus Status { get; private set; }
     public DateTime CreatedAtUtc { get; private set; }
+    public DateTime? ExpiresAtUtc { get; private set; }
+    public DateTime? LastUsedAtUtc { get; private set; }
     public DateTime? RevokedAtUtc { get; private set; }
 
     private ApiCredential()
     {
     }
 
-    public static ApiCredential Create(Guid id, Guid organizationId, string name, string keyPrefix, string keyHash, TenantScope tenantScope)
+    public static ApiCredential Create(Guid id, Guid organizationId, string name, string keyPrefix, string keyHash, TenantScope tenantScope, DateTime? expiresAtUtc = null)
     {
         DomainValidation.RequireId(id, nameof(id), "API credential ID");
         DomainValidation.RequireOrganization(organizationId, tenantScope);
@@ -30,11 +35,15 @@ public sealed class ApiCredential
         {
             Id = id,
             OrganizationId = organizationId,
+            ApplicationId = tenantScope.ApplicationId,
+            ServiceId = tenantScope.ServiceId,
+            EnvironmentId = tenantScope.EnvironmentId,
             Name = name.Trim(),
             KeyPrefix = keyPrefix.Trim(),
             KeyHash = keyHash.Trim(),
             Status = ApiCredentialStatus.Active,
-            CreatedAtUtc = DateTime.UtcNow
+            CreatedAtUtc = DateTime.UtcNow,
+            ExpiresAtUtc = expiresAtUtc
         };
     }
 
@@ -47,5 +56,15 @@ public sealed class ApiCredential
 
         Status = ApiCredentialStatus.Revoked;
         RevokedAtUtc = revokedAtUtc;
+    }
+
+    public bool IsValidAt(DateTime nowUtc) => Status == ApiCredentialStatus.Active && (ExpiresAtUtc is null || ExpiresAtUtc > nowUtc);
+
+    public void MarkUsed(DateTime usedAtUtc)
+    {
+        if (IsValidAt(usedAtUtc))
+        {
+            LastUsedAtUtc = usedAtUtc;
+        }
     }
 }

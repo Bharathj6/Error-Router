@@ -10,10 +10,11 @@
 using System;
 using System.Reflection;
 
+[assembly: Microsoft.Extensions.Configuration.UserSecrets.UserSecretsIdAttribute("ErrorRouter-Api-Development")]
 [assembly: System.Reflection.AssemblyCompanyAttribute("ErrorRouter.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b0b16b0329f9cc482fcc1de5ecbc2fe42b3ad2ef")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+14dcf2d2ce0418e824097c9144d1250d424d8622")]
 [assembly: System.Reflection.AssemblyProductAttribute("ErrorRouter.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ErrorRouter.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

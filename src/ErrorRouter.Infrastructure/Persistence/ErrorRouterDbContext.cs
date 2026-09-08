@@ -132,6 +132,9 @@ public sealed class ErrorRouterDbContext : DbContext
         entity.ToTable("api_credentials");
         entity.HasKey(x => x.Id);
         ConfigureTenantEntity(entity, x => x.OrganizationId);
+        entity.Property(x => x.ApplicationId).IsRequired();
+        entity.Property(x => x.ServiceId).IsRequired();
+        entity.Property(x => x.EnvironmentId).IsRequired();
         entity.Property(x => x.Name).HasMaxLength(200).IsRequired();
         entity.Property(x => x.KeyPrefix).HasMaxLength(32).IsRequired();
         entity.Property(x => x.KeyHash).HasMaxLength(256).IsRequired();
@@ -139,7 +142,11 @@ public sealed class ErrorRouterDbContext : DbContext
         entity.Property(x => x.CreatedAtUtc).HasColumnType("timestamp with time zone");
         entity.Property(x => x.RevokedAtUtc).HasColumnType("timestamp with time zone");
         entity.HasIndex(x => new { x.OrganizationId, x.KeyPrefix }).IsUnique().HasDatabaseName("ux_api_credentials_prefix");
+        entity.HasIndex(x => new { x.KeyPrefix, x.Status }).HasDatabaseName("ix_api_credentials_prefix_status");
         entity.HasOne<Organization>().WithMany().HasForeignKey(x => x.OrganizationId).OnDelete(DeleteBehavior.Cascade);
+        entity.HasOne<DomainApplication>().WithMany().HasForeignKey(x => x.ApplicationId).OnDelete(DeleteBehavior.Restrict);
+        entity.HasOne<Service>().WithMany().HasForeignKey(x => x.ServiceId).OnDelete(DeleteBehavior.Restrict);
+        entity.HasOne<Domain.Entities.Environment>().WithMany().HasForeignKey(x => x.EnvironmentId).OnDelete(DeleteBehavior.Restrict);
     }
 
     private void ConfigureIntegration(EntityTypeBuilder<TicketingIntegration> entity)
