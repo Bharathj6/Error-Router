@@ -1,0 +1,6 @@
+{
+  "name": "Universal Production Error Automation Platform",
+  "description": "Automated triage, pre-persistence sanitization, SHA-256 fingerprinting, hierarchical ownership routing, and resilient ticketing dispatch.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

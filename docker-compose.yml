@@ -1,0 +1,80 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: uep-postgres-16
+    restart: always
+    environment:
+      POSTGRES_DB: universal_error_platform
+      POSTGRES_USER: uep_admin
+      POSTGRES_PASSWORD: uep_secure_password_2026
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./dotnet/scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U uep_admin -d universal_error_platform"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - uep-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: uep-redis-7
+    restart: always
+    command: ["redis-server", "--appendonly", "yes", "--requirepass", "redis_secure_pass_2026"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "redis_secure_pass_2026", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+    networks:
+      - uep-network
+
+  api:
+    build:
+      context: .
+      dockerfile: ./dotnet/Dockerfile
+    container_name: uep-dotnet-api
+    restart: on-failure
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:5000
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=universal_error_platform;Username=uep_admin;Password=uep_secure_password_2026;Pooling=true;Minimum Pool Size=5;Maximum Pool Size=100;
+      - Redis__ConnectionString=redis:6379,password=redis_secure_pass_2026
+      - Jira__BaseUrl=https://jira.internal.corp
+      - AzureDevOps__OrganizationUrl=https://dev.azure.com/internal-corp
+    ports:
+      - "5000:5000"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:5000/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - uep-network
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  uep-network:
+    driver: bridge
